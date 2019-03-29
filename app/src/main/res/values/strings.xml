@@ -2,18 +2,10 @@
   <string name="app_name">SchauAusDemFensterApp</string>
 
   <!-- Strings related to Settings -->
+  <string name="pref.general.header.enable_image_analysis">"Enable Image Analysis"</string>
+  <string name="pref.general.description.enable_image_analysis">"Analyses the Image after it was taken and tells the user how good the weather is."</string>
 
   <!-- Example General settings -->
-  <string name="pref_header_general">General</string>
-
-  <string name="pref_title_social_recommendations">Enable social recommendations</string>
-  <string name="pref_description_social_recommendations">Recommendations for people to contact based on your message
-    history
-  </string>
-
-  <string name="pref_title_display_name">Display name</string>
-  <string name="pref_default_display_name">John Smith</string>
-
   <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
   <string-array name="pref_example_list_titles">
     <item>Always</item>
@@ -25,6 +17,20 @@
     <item>0</item>
     <item>-1</item>
   </string-array>
+  <string name="title_activity_settings">Settings</string>
+
+  <!-- Strings related to Settings -->
+
+  <!-- Example General settings -->
+  <string name="pref_header_general">General</string>
+
+  <string name="pref_title_social_recommendations">Enable social recommendations</string>
+  <string name="pref_description_social_recommendations">Recommendations for people to contact based on your message
+    history
+  </string>
+
+  <string name="pref_title_display_name">Display name</string>
+  <string name="pref_default_display_name">John Smith</string>
 
   <!-- Example settings for Data & Sync -->
   <string name="pref_header_data_sync">Data &amp; sync</string>
