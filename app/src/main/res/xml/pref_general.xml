@@ -2,8 +2,9 @@
 
   <SwitchPreference
     android:defaultValue="true"
-    android:key="switch_settings_analyze_image"
-    android:summary="@string/pref.general.description.enable_image_analysis"
+    android:key="pref_analyze_image"
+    android:summaryOff="@string/pref.general.summary.off.enable_image_analysis"
+    android:summaryOn="@string/pref.general.summary.on.enable_image_analysis"
     android:title="@string/pref.general.header.enable_image_analysis"/>
 
   <!-- NOTE: EditTextPreference accepts EditText attributes. -->

@@ -5,22 +5,24 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="@android:color/holo_green_dark"
   tools:context=".ShowCameraPictureActivity"
   tools:layout_editor_absoluteY="81dp">
 
   <TextView
     android:id="@+id/text-imageview"
-    android:layout_width="wrap_content"
-    android:layout_height="37dp"
+    android:layout_width="197dp"
+    android:layout_height="38dp"
     android:background="@color/colorPrimary"
-    android:text="Current Weather"
+    android:text="@string/show_image.weather_outside"
     android:textAlignment="center"
     android:textColor="@android:color/white"
     android:textSize="24sp"
     android:typeface="normal"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"/>
+    app:layout_constraintTop_toTopOf="parent"
+    />
 
   <ImageView
     android:id="@+id/image_view"
@@ -30,11 +32,11 @@
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
+    android:contentDescription="shows an Image"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.5"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/text-imageview"
-    tools:src="@tools:sample/backgrounds/scenic"
-    android:contentDescription="TODO"/>
+    tools:src="@tools:sample/backgrounds/scenic"/>
 </android.support.constraint.ConstraintLayout>

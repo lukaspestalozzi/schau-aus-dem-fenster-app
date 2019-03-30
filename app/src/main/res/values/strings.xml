@@ -1,9 +1,24 @@
-<resources>
-  <string name="app_name">SchauAusDemFensterApp</string>
+<resources tools:ignore="ExtraTranslation" xmlns:tools="http://schemas.android.com/tools">
+  <string name="app_name">Schau aus dem Fenster Wetter App</string>
+
+  <!-- Main Screen -->
+  <string name="main.take_picture_of_outside">Take a Picture of the Weather outside</string>
+
+  <!-- Show Image screen -->
+  <string name="show_image.weather_outside">Weather Outside</string>
+
+  <!-- Error messages -->
+  <string name="error.handle_image_result">Failed to handle the image result</string>
+  <string name="error.cant_continue_no_permissions">Can\'t continue without those Permissions</string>
+
+
 
   <!-- Strings related to Settings -->
-  <string name="pref.general.header.enable_image_analysis">"Enable Image Analysis"</string>
-  <string name="pref.general.description.enable_image_analysis">"Analyses the Image after it was taken and tells the user how good the weather is."</string>
+  <string name="pref.title">Settings</string>
+  <!-- Enable Image Analysis -->
+  <string name="pref.general.header.enable_image_analysis">Image Analysis</string>
+  <string name="pref.general.summary.on.enable_image_analysis">Analyses the Image after it was taken and tells the user how good the weather is.</string>
+  <string name="pref.general.summary.off.enable_image_analysis">Does not analyse the Image after it was taken.</string>
 
   <!-- Example General settings -->
   <string name="pref_title_add_friends_to_messages">Add friends to messages</string>

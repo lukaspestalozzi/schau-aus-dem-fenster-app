@@ -3,10 +3,6 @@ package com.lpi.schauausdemfensterapp
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -16,11 +12,8 @@ import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.widget.ImageView
 import android.widget.Toast
-import com.log4k.Level
-import com.log4k.Log4k
+import com.log4k.*
 import com.log4k.android.AndroidAppender
-import com.log4k.d
-import com.log4k.e
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -32,8 +25,6 @@ class ShowCameraPictureActivity : AppCompatActivity () {
   private val SELECT_IMAGE_INTENT_CODE: Int = 900
   private val PERMISSION_REQUEST_CODE: Int = 901
 
-
-  private var currentPhotoPath: String? = null
   private var currentPhotoUri: Uri? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,10 +33,12 @@ class ShowCameraPictureActivity : AppCompatActivity () {
 
     Log4k.add(Level.Debug, ".*", AndroidAppender())
 
+    // Ask for permissions that are not yet granted
     val notGrantedPermissions = arrayOf(Manifest.permission.CAMERA,
       Manifest.permission.WRITE_EXTERNAL_STORAGE,
       Manifest.permission.READ_EXTERNAL_STORAGE)
       .filter { checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED }.toTypedArray()
+
     if (notGrantedPermissions.isNotEmpty()) {
       requestPermissions(notGrantedPermissions, PERMISSION_REQUEST_CODE)
     } else {
@@ -65,37 +58,6 @@ class ShowCameraPictureActivity : AppCompatActivity () {
     } catch (ex: Exception) {
       e("Error while dispatching the Take Picture Intent", ex)
     }
-  }
-
-  /**
-   * Take picture with camera
-   */
-  private fun takePictureAndSaveIt() {
-
-    Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-      // Ensure that there's a camera activity to handle the intent
-      takePictureIntent.resolveActivity(packageManager)?.also {
-        // Create the File where the photo should go
-        val photoFile: File? = try {
-          createTempFile()
-        } catch (ex: IOException) {
-          // Error occurred while creating the File
-          e("Error occurred while creating the File", ex)
-          null
-        }
-        // Continue only if the File was successfully created
-        photoFile?.also { file ->
-          val photoURI: Uri = FileProvider.getUriForFile(
-            this,
-            "com.example.android.fileprovider",
-            file
-          )
-          takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-          startActivityForResult(takePictureIntent, SELECT_IMAGE_INTENT_CODE)
-        }
-      }
-    }
-
   }
 
   /**
@@ -139,102 +101,34 @@ class ShowCameraPictureActivity : AppCompatActivity () {
    */
   private fun handleImageCapturedResult(requestCode: Int, resultCode: Int, data: Intent?) {
     try {
-      return handleImageCapturedResult_tempFile(requestCode, resultCode, data)
+      if (resultCode == AppCompatActivity.RESULT_OK) {
+        if (data == null || data.data == null) {
+          // Happens when photo was taken by camera
+          insertIntoImageView(currentPhotoUri!!)
+        } else {
+          // when was chosen from gallery
+          insertIntoImageView(data.data as Uri)
+        }
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
+        val doAnalyze = preferences.getBoolean("pref_analyze_image", false)
+        i("Analyse Preference is set to $doAnalyze")
+
+      } else {
+        showToast(R.string.error_handle_image_result)
+        e("Failed to handle the image result: $resultCode")
+      }
     } catch (ex: Exception) {
       e("Error while handling the captured Image", ex)
     }
   }
 
-  /**
-   * Handle Image capture Result
-   */
-  private fun handleImageCapturedResult_tempFile(requestCode: Int, resultCode: Int, data: Intent?) {
-    if (resultCode == AppCompatActivity.RESULT_OK) {
-      if (data == null || data.data == null) {
-        // Happens when photo was taken by camera
-        // insertCurrentPhotoIntoImageView()
-        insertIntoImageView(currentPhotoUri!!)
-      } else {
-        // when was chosen from gallery
-        insertIntoImageView(data.data as Uri)
-      }
-
-      val preferences = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
-      val doAnalyze = preferences.getBoolean("pref_analyze_image", false)
-      showToast("Analyse Preference is set to $doAnalyze")
-
-    } else {
-      showToast("Failed to handle the image result: $resultCode")
-    }
-  }
-
-  private fun insertCurrentPhotoIntoImageView() {
-    d("Start inserting current Photo ($currentPhotoPath) into Image View")
-    val imageView = this.findViewById(R.id.image_view) as ImageView
-
-    // Get the dimensions of the View
-    val targetW: Int = imageView.width
-    val targetH: Int = imageView.height
-
-    val bmOptions = BitmapFactory.Options().apply {
-      // Get the dimensions of the bitmap
-      inJustDecodeBounds = true
-      BitmapFactory.decodeFile(currentPhotoPath, this)
-      val photoW: Int = outWidth
-      val photoH: Int = outHeight
-
-      // Decode the image file into a Bitmap sized to fill the View
-      inJustDecodeBounds = false
-
-      // Determine how much to scale down the image
-      if (targetW > 0 && targetH > 0) {
-        val scaleFactor: Int = Math.min(photoW / targetW, photoH / targetH)
-        // inSampleSize = scaleFactor
-      }
-    }
-    BitmapFactory.decodeFile(currentPhotoPath, bmOptions)?.also { bitmap ->
-      imageView.setImageBitmap(rotateBitmap(currentPhotoPath!!, bitmap))
-    }
-    d("Done inserting current Photo ($currentPhotoPath) into Image View")
-  }
-
-  fun insertIntoImageView(uri: Uri) {
+  private fun insertIntoImageView(uri: Uri) {
     d("Start inserting uri ($uri) into Image View")
     val imageView = this.findViewById(R.id.image_view) as ImageView
 
     imageView.setImageURI(uri)
     d("Done inserting uri Photo ($uri) into Image View")
-  }
-
-  private fun rotateBitmap(src: String, bitmap: Bitmap): Bitmap {
-    // rotate the bitmap
-    val orientation = ExifInterface(src).getAttributeInt(ExifInterface.TAG_ORIENTATION, 1)
-    val matrix = Matrix()
-    when (orientation) {
-      ExifInterface.ORIENTATION_NORMAL -> return bitmap
-      ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.setScale(-1f, 1f)
-      ExifInterface.ORIENTATION_ROTATE_180 -> matrix.setRotate(180f)
-      ExifInterface.ORIENTATION_FLIP_VERTICAL -> {
-        matrix.setRotate(180f); matrix.postScale(-1f, 1f)
-      }
-      ExifInterface.ORIENTATION_TRANSPOSE -> {
-        matrix.setRotate(90f); matrix.postScale(-1f, 1f)
-      }
-      ExifInterface.ORIENTATION_ROTATE_90 -> matrix.setRotate(90f)
-      ExifInterface.ORIENTATION_TRANSVERSE -> {
-        matrix.setRotate(-90f); matrix.postScale(-1f, 1f)
-      }
-      ExifInterface.ORIENTATION_ROTATE_270 -> matrix.setRotate(-90f)
-    }
-
-    try {
-      val oriented = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-      bitmap.recycle()
-      return oriented
-    } catch (e: OutOfMemoryError) {
-      e("OutOfMemoryError while rotating the bitmap", e)
-      return bitmap
-    }
   }
 
   /**
@@ -253,11 +147,11 @@ class ShowCameraPictureActivity : AppCompatActivity () {
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
     when (requestCode) {
       PERMISSION_REQUEST_CODE -> {
-        showToast("Permission requested with answer: $grantResults")
+        showDebugToast("Permissions requested: $permissions with answer: $grantResults")
         if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
           dispatchTakePictureIntent()
         } else {
-          showToast("Can't continue without those Permisisons")
+          showToast(R.string.error_cant_continue_no_permissions)
           // go to main screen
           startActivity(Intent(this, MainScreenActivity::class.java))
         }
@@ -266,8 +160,20 @@ class ShowCameraPictureActivity : AppCompatActivity () {
     }
   }
 
-  private fun showToast(string: String) {
-    Toast.makeText(this, string, Toast.LENGTH_LONG).show()
+  private fun showToast(id: Int) {
+    val s = getString(id)
+    Toast.makeText(this, s, Toast.LENGTH_LONG).show()
+  }
+
+  /**
+   * Only shows the Toast in BuildConfig.DEBUG <br>
+   * Always logs to DEBUG
+   */
+  private fun showDebugToast(string: String) {
+    d("Debug Toast: $string")
+    if (BuildConfig.DEBUG) {
+      Toast.makeText(this, string, Toast.LENGTH_LONG).show()
+    }
   }
 
   @Throws(IOException::class)
@@ -279,9 +185,6 @@ class ShowCameraPictureActivity : AppCompatActivity () {
       "Image_${timeStamp}_", /* prefix */
       null, /* suffix */
       storageDir /* directory */
-    ).apply {
-      // Save a file: path for later use
-      currentPhotoPath = absolutePath
-    }
+    )
   }
 }

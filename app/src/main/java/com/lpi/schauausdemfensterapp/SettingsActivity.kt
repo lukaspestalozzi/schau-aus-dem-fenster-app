@@ -163,11 +163,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         val index = listPreference.findIndexOfValue(stringValue)
 
         // Set the summary to reflect the new value.
-        preference.setSummary(
-          if (index >= 0)
-            listPreference.entries[index]
-          else
-            null)
+        preference.setSummary(if (index >= 0) listPreference.entries[index] else null)
 
       } else if (preference is RingtonePreference) {
         // For ringtone preferences, look up the correct display value
