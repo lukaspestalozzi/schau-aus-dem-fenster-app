@@ -24,19 +24,33 @@
     app:layout_constraintTop_toTopOf="parent"
     />
 
+  <TextView
+    android:id="@+id/text_imageview_weather_condition"
+    android:layout_width="197dp"
+    android:layout_height="38dp"
+    android:background="@color/colorPrimary"
+    android:textAlignment="center"
+    android:textColor="@android:color/white"
+    android:textSize="24sp"
+    android:typeface="normal"
+    android:visibility="gone"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.502"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/text-imageview"/>
+
   <ImageView
     android:id="@+id/image_view"
     android:layout_width="wrap_content"
-    android:layout_height="458dp"
+    android:layout_height="409dp"
     android:layout_marginBottom="8dp"
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
     android:contentDescription="shows an Image"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintHorizontal_bias="0.5"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/text-imageview"
+    app:layout_constraintTop_toBottomOf="@+id/text_imageview_weather_condition"
     tools:src="@tools:sample/backgrounds/scenic"/>
 </android.support.constraint.ConstraintLayout>

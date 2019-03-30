@@ -10,7 +10,9 @@ import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.log4k.*
 import com.log4k.android.AndroidAppender
@@ -30,6 +32,9 @@ class ShowCameraPictureActivity : AppCompatActivity () {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_show_camera_picture)
+
+    // hide the weather condition text. It will be set later
+    findViewById<TextView>(R.id.text_imageview_weather_condition).visibility = View.GONE
 
     Log4k.add(Level.Debug, ".*", AndroidAppender())
 
@@ -113,6 +118,10 @@ class ShowCameraPictureActivity : AppCompatActivity () {
         val preferences = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
         val doAnalyze = preferences.getBoolean("pref_analyze_image", false)
         i("Analyse Preference is set to $doAnalyze")
+        if (doAnalyze) {
+          analyseImage(currentPhotoUri)
+        }
+
 
       } else {
         showToast(R.string.error_handle_image_result)
@@ -121,6 +130,20 @@ class ShowCameraPictureActivity : AppCompatActivity () {
     } catch (ex: Exception) {
       e("Error while handling the captured Image", ex)
     }
+  }
+
+  private fun analyseImage(uri: Uri?) {
+    val rand = Random()
+    val index = rand.nextInt(5)
+    val weather_string = arrayOf(
+        R.string.show_image_sunny,
+        R.string.show_image_passable,
+        R.string.show_image_cloudy,
+        R.string.show_image_very_cloudy,
+        R.string.show_image_stay_inside)[index]
+    val textView = findViewById<TextView>(R.id.text_imageview_weather_condition)
+    textView.setText(weather_string)
+    textView.visibility = View.VISIBLE
   }
 
   private fun insertIntoImageView(uri: Uri) {

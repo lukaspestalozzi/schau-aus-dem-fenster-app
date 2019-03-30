@@ -5,7 +5,12 @@
   <string name="main.take_picture_of_outside">Take a Picture of the Weather outside</string>
 
   <!-- Show Image screen -->
-  <string name="show_image.weather_outside">Weather Outside</string>
+  <string name="show_image.weather_outside">Weather Outside:</string>
+  <string name="show_image.sunny">Sunny :)</string>
+  <string name="show_image.passable">Passable</string>
+  <string name="show_image.cloudy">Cloudy</string>
+  <string name="show_image.very_cloudy">Very Cloudy</string>
+  <string name="show_image.stay_inside">Please stay inside!</string>
 
   <!-- Error messages -->
   <string name="error.handle_image_result">Failed to handle the image result</string>
